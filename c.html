@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subsecuencia Creciente Más Larga (LIS)</title>
+    <!-- Reveal.js para diapositivas -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/dist/reveal.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/dist/theme/white.css">
+    <!-- MathJax para renderizar LaTeX -->
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <!-- MxGraph para diagramas -->
+    <script src="https://cdn.jsdelivr.net/npm/mxgraph@4.2.2/javascript/mxClient.min.js"></script>
+    <!-- Mermaid para diagramas de flujo -->
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        mermaid.initialize({ startOnLoad: true });
+    </script>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+        .reveal section {
+            font-size: 1.2em;
+            padding: 20px;
+            box-sizing: border-box;
+            text-align: left;
+        }
+        h1, h2 {
+            color: #1e40af;
+            font-weight: bold;
+            margin-bottom: 1rem;
+        }
+        ul {
+            list-style: disc;
+            padding-left: 2rem;
+            margin: 1rem 0;
+        }
+        pre.ascii-art {
+            font-family: monospace;
+            white-space: pre;
+            background: #f3f4f6;
+            padding: 1rem;
+            border-radius: 5px;
+            max-height: 250px;
+            overflow-y: auto;
+            font-size: 0.9em;
+        }
+        .mermaid {
+            max-width: 100%;
+            overflow-x: auto;
+        }
+        .mxgraph-container {
+            width: 100%;
+            height: 250px;
+            max-width: 600px;
+            margin: 1rem auto;
+            border: 1px solid #ccc;
+        }
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .reveal section {
+                font-size: 1em;
+                padding: 15px;
+            }
+            h1 { font-size: 1.8em; }
+            h2 { font-size: 1.5em; }
+            .mxgraph-container { height: 200px; }
+            pre.ascii-art { font-size: 0.8em; max-height: 200px; }
+        }
+        @media (max-width: 480px) {
+            .reveal section { font-size: 0.9em; padding: 10px; }
+            h1 { font-size: 1.5em; }
+            h2 { font-size: 1.2em; }
+            .mxgraph-container { height: 150px; }
+            pre.ascii-art { font-size: 0.7em; max-height: 150px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="reveal">
+        <div class="slides">
+            <!-- Diapositiva 1: Portada -->
+            <section style="display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                <h1>Subsecuencia Creciente Más Larga (LIS) 🌟</h1>
+                <p style="font-size: 1.2em; margin-top: 1rem;">Exposición para Principiantes</p>
+                <p style="font-size: 1em; margin-top: 0.5rem;">25 de Junio, 2025</p>
+            </section>
+
+            <!-- Diapositiva 2: ¿Qué es LIS? -->
+            <section>
+                <h2>¿Qué es LIS? 🚀</h2>
+                <ul>
+                    <li><strong>Definición</strong>: Encontrar la subsecuencia más larga en un arreglo donde los elementos están en orden <em>estrictamente creciente</em>.</li>
+                    <li><strong>Subsecuencia</strong>: No necesariamente contigua, pero respeta el orden del arreglo.</li>
+                    <li><strong>Ejemplo</strong>: Arreglo = [3, 10, 2, 1, 20] → LIS = [3, 10, 20] (longitud 3).</li>
+                </ul>
+                <pre class="ascii-art">
+3 → 10 → 20
+(saltamos 2 y 1)
+                </pre>
+            </section>
+
+            <!-- Diapositiva 3: Programación Dinámica -->
+            <section>
+                <h2>Programación Dinámica 📚</h2>
+                <ul>
+                    <li><strong>Idea</strong>: Resolver subproblemas y almacenar resultados para evitar cálculos redundantes.</li>
+                    <li>Arreglo <code>L</code>: <code>L[i]</code> = longitud de la LIS que termina en el índice <code>i</code>.</li>
+                    <li><strong>Fórmula</strong>: \( L[i] = 1 + \max\{L[j] \mid j < i \text{ y } A[j] < A[i]\} \)</li>
+                    <li>Si no hay <code>j</code> válido, <code>L[i] = 1</code>.</li>
+                </ul>
+                <p><strong>Ejemplo</strong>: Para \( A = [3, 10] \), \( L[0] = 1 \), \( L[1] = 1 + L[0] = 2 \).</p>
+            </section>
+
+            <!-- Diapositiva 4: Algoritmo en Pseudocódigo -->
+            <section>
+                <h2>Algoritmo en Pseudocódigo 💻</h2>
+                <pre class="ascii-art">
+Entrada: Arreglo A de n números
+Salida: Longitud de la LIS
+L ← [1, 1, ..., 1]  // Inicializar longitudes
+Para i de 1 a n-1:
+    Para j de 0 a i-1:
+        Si A[j] < A[i]:
+            L[i] ← max(L[i], 1 + L[j])
+Devolver max(L)
+                </pre>
+                <div class="mermaid">
+graph TD
+    A[Inicio] --> B[Inicializar L con 1s]
+    B --> C[Para cada i de 1 a n-1]
+    C --> D[Para cada j de 0 a i-1]
+    D --> E{A[j] < A[i]?}
+    E -->|Sí| F[Actualizar L[i] = max(L[i], 1 + L[j])]
+    E -->|No| D
+    D --> C
+    C --> G[Devolver max(L)]
+                </div>
+            </section>
+
+            <!-- Diapositiva 5: Complejidad -->
+            <section>
+                <h2>Complejidad Algorítmica ⏳</h2>
+                <ul>
+                    <li><strong>Tiempo</strong>: \( O(n^2) \)
+                        <ul>
+                            <li>Dos bucles anidados: para cada \( i \), revisamos todos los \( j < i \).</li>
+                            <li>Justificación: Cada par \( (i, j) \) se evalúa una vez, con \( n(n-1)/2 \) comparaciones.</li>
+                        </ul>
+                    </li>
+                    <li><strong>Espacio</strong>: \( O(n) \)
+                        <ul>
+                            <li>Arreglo <code>L</code> de tamaño \( n \).</li>
+                        </ul>
+                    </li>
+                    <li><strong>Optimización</strong>: Versión en \( O(n \log n) \) usando búsqueda binaria para mantener una lista de "finales" de subsecuencias.</li>
+                </ul>
+            </section>
+
+            <!-- Diapositiva 6: Ejemplo Visual con MxGraph -->
+            <section>
+                <h2>Ejemplo Visual 🎨</h2>
+                <p><strong>Arreglo</strong>: [3, 10, 2, 1, 20]</p>
+                <div id="graph" class="mxgraph-container"></div>
+                <pre class="ascii-art">
+┌────────┬─────┬─────┬─────┬─────┬─────┐
+│ Índice │  0  │  1  │  2  │  3  │  4  │
+├────────┼─────┼─────┼─────┼─────┼─────┤
+│ Valor  │  3  │ 10  │  2  │  1  │ 20  │
+├────────┼─────┼─────┼─────┼─────┼─────┤
+│ L[i]   │  1  │  2  │  1  │  1  │  3  │
+└────────┴─────┴─────┴─────┴─────┴─────┘
+LIS: 3 → 10 → 20
+                </pre>
+                <p><strong>Paso a paso</strong>:</p>
+                <ul>
+                    <li>\( i=1 \) (10): \( 3 < 10 \to L[1] = 1 + L[0] = 2 \).</li>
+                    <li>\( i=4 \) (20): \( 3, 10, 1 < 20 \to L[4] = 1 + \max(L[0], L[1], L[3]) = 3 \).</li>
+                </ul>
+                <script>
+                    if (!mxClient.isBrowserSupported()) {
+                        alert('¡Navegador no soporta MxGraph!');
+                    } else {
+                        let container = document.getElementById('graph');
+                        let graph = new mxGraph(container);
+                        let parent = graph.getDefaultParent();
+                        graph.getModel().beginUpdate();
+                        try {
+                            let width = container.offsetWidth;
+                            let spacing = Math.min(100, width / 6);
+                            let v1 = graph.insertVertex(parent, null, '3', 20, 50, 40, 40, 'fillColor=#d1fae5;strokeColor=green');
+                            let v2 = graph.insertVertex(parent, null, '10', 20 + spacing, 50, 40, 40, 'fillColor=#d1fae5;strokeColor=green');
+                            let v3 = graph.insertVertex(parent, null, '2', 20 + 2 * spacing, 50, 40, 40);
+                            let v4 = graph.insertVertex(parent, null, '1', 20 + 3 * spacing, 50, 40, 40);
+                            let v5 = graph.insertVertex(parent, null, '20', 20 + 4 * spacing, 50, 40, 40, 'fillColor=#d1fae5;strokeColor=green');
+                            graph.insertEdge(parent, null, '', v1, v2, 'strokeColor=green;');
+                            graph.insertEdge(parent, null, '', v2, v5, 'strokeColor=green;');
+                        } finally {
+                            graph.getModel().endUpdate();
+                        }
+                    }
+                </script>
+            </section>
+
+            <!-- Diapositiva 7: Implementaciones -->
+            <section>
+                <h2>Implementaciones 💻</h2>
+                <p><strong>JavaScript</strong>:</p>
+                <pre class="ascii-art">
+function lis(arr) {
+    const n = arr.length;
+    const L = Array(n).fill(1);
+    for (let i = 1; i < n; i++) {
+        for (let j = 0; j < i; j++) {
+            if (arr[j] < arr[i]) {
+                L[i] = Math.max(L[i], 1 + L[j]);
+            }
+        }
+    }
+    return Math.max(...L);
+}
+// Ejemplo: console.log(lis([3, 10, 2, 1, 20])); // 3
+                </pre>
+                <p><strong>C++</strong>:</p>
+                <pre class="ascii-art">
+#include <vector>
+#include <algorithm>
+int lis(std::vector<int>& arr) {
+    int n = arr.size();
+    std::vector<int> L(n, 1);
+    for (int i = 1; i < n; i++) {
+        for (int j = 0; j < i; j++) {
+            if (arr[j] < arr[i]) {
+                L[i] = std::max(L[i], 1 + L[j]);
+            }
+        }
+    }
+    return *std::max_element(L.begin(), L.end());
+}
+// Ejemplo: arr = {3, 10, 2, 1, 20}; // Retorna 3
+                </pre>
+                <p><strong>Python</strong>:</p>
+                <pre class="ascii-art">
+def lis(arr):
+    n = len(arr)
+    L = [1] * n
+    for i in range(1, n):
+        for j in range(i):
+            if arr[j] < arr[i]:
+                L[i] = max(L[i], 1 + L[j])
+    return max(L)
+# Ejemplo: print(lis([3, 10, 2, 1, 20])) # 3
+                </pre>
+            </section>
+
+            <!-- Diapositiva 8: Beneficios y Usos -->
+            <section>
+                <h2>Beneficios y Usos 🌟</h2>
+                <ul>
+                    <li><strong>Beneficios</strong>:
+                        <ul>
+                            <li>Enseña fundamentos de programación dinámica.</li>
+                            <li>Base para algoritmos más avanzados (ej. \( O(n \log n) \)).</li>
+                            <li>Fácil de implementar y entender para novatos.</li>
+                        </ul>
+                    </li>
+                    <li><strong>Usos</strong>:
+                        <ul>
+                            <li>Problemas de optimización (ej. planificación de tareas).</li>
+                            <li>Análisis de secuencias (bioinformática, series temporales).</li>
+                            <li>Competiciones de programación (ej. Codeforces, LeetCode).</li>
+                        </ul>
+                    </li>
+                </ul>
+            </section>
+
+            <!-- Diapositiva 9: Consejos -->
+            <section>
+                <h2>Consejos para Entender 🙌</h2>
+                <ul>
+                    <li><strong>Visualiza</strong>: Dibuja el arreglo y conecta elementos crecientes.</li>
+                    <li><strong>Practica</strong>: Usa arreglos pequeños como [1, 3, 2, 4].</li>
+                    <li><strong>Codea</strong>: Implementa en tu lenguaje favorito y prueba casos.</li>
+                    <li><strong>Explora</strong>: Investiga la versión optimizada con búsqueda binaria.</li>
+                </ul>
+            </section>
+
+            <!-- Diapositiva 10: Conclusión -->
+            <section style="display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                <h2>Conclusión 🌟</h2>
+                <ul>
+                    <li>LIS es un problema clásico resuelto con <strong>programación dinámica</strong>.</li>
+                    <li><strong>Clave</strong>: Divide en subproblemas y construye la solución paso a paso.</li>
+                    <li><strong>Próximo paso</strong>: Implementa y explora la versión \( O(n \log n) \).</li>
+                </ul>
+                <p style="font-size: 1.2em; margin-top: 1rem;">¡Gracias por tu atención! 🙌</p>
+            </section>
+        </div>
+    </div>
+    <!-- Inicializando Reveal.js -->
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/dist/reveal.js"></script>
+    <script>
+        Reveal.initialize({
+            hash: true,
+            transition: 'slide',
+            width: '100%',
+            height: '100%',
+            center: false,
+            margin: 0.1,
+            minScale: 0.2,
+            maxScale: 1.5
+        });
+    </script>
+</body>
+</html>

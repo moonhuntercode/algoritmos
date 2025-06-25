@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Presentación LIS: Longest Increasing Subsequence</title>
+    <!-- Tailwind CSS CDN para estilos modernos y responsivos -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Aplicamos la fuente Inter globalmente para una mejor legibilidad */
+        body {
+            font-family: 'Inter', sans-serif;
+            line-height: 2; /* Doble espaciado para mejor lectura, equivalente a 30px si el tamaño base es 15px */
+            background-color: #f8fafc; /* Fondo claro */
+            color: #1e293b; /* Texto oscuro para contraste */
+        }
+        /* Estilos generales para las diapositivas */
+        .slide {
+            padding: 2.5rem; /* Margen interior generoso para simular normas APA 7 */
+            margin: 2.5rem auto; /* Margen exterior para separar las diapositivas y centrarlas */
+            max-width: 1200px; /* Ancho máximo para la legibilidad */
+            background-color: #ffffff; /* Fondo blanco para cada diapositiva */
+            border-radius: 1rem; /* Esquinas redondeadas */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Sombra suave */
+        }
+        /* Estilos específicos para títulos y subtítulos */
+        .slide h2 {
+            font-size: 2.5rem; /* Tamaño de título principal */
+            font-weight: 700; /* Negrita */
+            color: #0d9488; /* Color teal para resaltar */
+            margin-bottom: 1.5rem; /* Espacio debajo del título */
+            line-height: 1.5; /* Espaciado de línea para títulos */
+        }
+        .slide h3 {
+            font-size: 2rem; /* Tamaño de subtítulo */
+            font-weight: 600; /* Semi-negrita */
+            color: #0f766e; /* Color teal más oscuro */
+            margin-top: 2rem; /* Espacio encima del subtítulo */
+            margin-bottom: 1rem; /* Espacio debajo del subtítulo */
+            line-height: 1.5;
+        }
+        .slide p, .slide ul, .slide li {
+            font-size: 1.125rem; /* Tamaño de fuente para el contenido */
+            line-height: 2; /* Doble espaciado */
+            margin-bottom: 1rem; /* Espacio entre párrafos y elementos de lista */
+        }
+        .slide ul {
+            list-style-type: disc; /* Viñetas */
+            padding-left: 1.5rem; /* Sangría para las listas */
+        }
+        /* Estilos para resaltar texto con emojis */
+        .highlight-text {
+            font-weight: 600; /* Semi-negrita para énfasis */
+            color: #0f766e; /* Un color que combine con los encabezados */
+        }
+        /* Estilos para los diagramas de Mermaid */
+        .mermaid {
+            background-color: #f0fdf4; /* Un fondo suave para los diagramas */
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            margin-top: 1.5rem;
+            margin-bottom: 1.5rem;
+            text-align: center; /* Centrar el contenido del diagrama */
+            overflow-x: auto; /* Para diagramas largos */
+        }
+        /* Estilos para la representación del arreglo dp (tablas HTML) */
+        .dp-array-container {
+            margin-top: 2rem;
+            margin-bottom: 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+        }
+        .dp-array {
+            border-collapse: collapse;
+            width: auto;
+            max-width: 100%;
+            margin: 0 auto;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 1.1rem;
+        }
+        .dp-array th, .dp-array td {
+            border: 1px solid #cbd5e1; /* Color de borde suave */
+            padding: 0.75rem 1.25rem; /* Espaciado dentro de las celdas */
+            text-align: center;
+            white-space: nowrap; /* Evita que los números se rompan en varias líneas */
+            border-radius: 0.25rem; /* Esquinas ligeramente redondeadas para celdas */
+        }
+        .dp-array th {
+            background-color: #e2e8f0; /* Fondo para encabezados */
+            font-weight: 600;
+            color: #334155;
+        }
+        .dp-array td {
+            background-color: #f8fafc; /* Fondo para celdas de datos */
+            color: #1e293b;
+        }
+        .dp-array .highlight-cell {
+            background-color: #d1fae5; /* Fondo verde claro para resaltar cambios */
+            color: #065f46; /* Texto verde oscuro */
+            font-weight: bold;
+            box-shadow: 0 0 0 2px #34d399; /* Borde de resalte */
+        }
+        .dp-array .index-label {
+            font-size: 0.8rem;
+            color: #64748b;
+            padding-top: 0.25rem;
+        }
+    </style>
+    <!-- MathJax CDN para renderizar ecuaciones LaTeX. Se configura para que use delimitadores \(...\) para inline y \[...\] para display. -->
+    <script type="text/javascript" id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>
+        MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            }
+        };
+    </script>
+    <!-- Mermaid.js CDN para generar diagramas de grafos/UML a partir de texto -->
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        // Configuración opcional de Mermaid.js para ajustar temas, etc.
+        mermaid.initialize({ startOnLoad: true });
+    </script>
+</head>
+<body class="p-8">
+    <!-- Diapositiva 1: Introducción a LIS -->
+    <div class="slide">
+        <h2 class="text-center">🚀 Longest Increasing Subsequence (LIS): La Subsecuencia Creciente Más Larga</h2>
+        <hr class="my-6 border-t-2 border-gray-200">
+
+        <h3>Página 1: ¿Qué es LIS? 🧐</h3>
+
+        <p class="mb-4">Es la <span class="highlight-text"><strong>subsecuencia creciente más larga</strong></span> que podemos formar a partir de una secuencia original de números. Para que sea válida, debe seguir dos reglas clave:</p>
+
+        <h4 class="text-xl font-semibold text-gray-700 mb-2">1. Es una Subsecuencia: ✨</h4>
+        <p>Esto significa que los números que elijas deben aparecer en el <span class="highlight-text"><strong>mismo orden</strong></span> que en la secuencia original. Puedes "saltarte" números, ¡pero nunca cambiar su orden!</p>
+
+        <ul class="list-disc ml-6">
+            <li>
+                <p><span class="highlight-text"><strong>Ejemplo de Subsecuencia Válida:</strong></span></p>
+                <ul class="list-inside list-none ml-4">
+                    <li>Secuencia Original: `[10, 22, 9, 33, 21, 50]`</li>
+                    <li>Subsecuencia: `[10, 21, 50]` <span class="text-green-600"><strong>✅</strong></span></li>
+                    <li><small>(Elegimos 10, luego 21 (saltando 22, 9, 33), luego 50. ¡El orden 10 &rarr; 21 &rarr; 50 se mantiene!) </small></li>
+                </ul>
+            </li>
+            <li>
+                <p><span class="highlight-text"><strong>Ejemplo de Subsecuencia Inválida:</strong></span></p>
+                <ul class="list-inside list-none ml-4">
+                    <li>Secuencia Original: `[10, 22, 9, 33, 21, 50]`</li>
+                    <li>¡NO es una subsecuencia!: `[33, 9]` <span class="text-red-600"><strong>❌</strong></span></li>
+                    <li><small>(Porque 9 aparece antes que 33 en la original. ¡Aquí el orden está al revés! ¡Esto rompe la regla!) </small></li>
+                </ul>
+            </li>
+        </ul>
+
+        <h4 class="text-xl font-semibold text-gray-700 mb-2 mt-4">2. Es Creciente: 📈</h4>
+        <p>Cada número en nuestra subsecuencia debe ser <span class="highlight-text"><strong>estrictamente mayor</strong></span> que el número que lo precede.</p>
+        <ul class="list-disc ml-6">
+            <li>
+                <p><span class="highlight-text"><strong>Ejemplo de Subsecuencia Creciente Válida:</strong></span></p>
+                <ul class="list-inside list-none ml-4">
+                    <li>`[1, 2, 3, 6]` (1 < 2, 2 < 3, 3 < 6) <span class="text-green-600"><strong>✅</strong></span></li>
+                </ul>
+            </li>
+            <li>
+                <p><span class="highlight-text"><strong>Ejemplo de Subsecuencia Creciente Inválida:</strong></span></p>
+                <ul class="list-inside list-none ml-4">
+                    <li>`[1, 5, 2]` (Porque 5 < 2 es <span class="text-red-600"><strong>FALSO</strong></span>. ¡Rompe la regla de ser creciente!) <span class="text-red-600"><strong>❌</strong></span></li>
+                </ul>
+            </li>
+        </ul>
+
+        <p class="mt-4"><span class="highlight-text"><strong>El Objetivo de LIS:</strong></span> Encontrar la <span class="highlight-text"><strong>mayor longitud posible</strong></span> de una subsecuencia que cumpla ambas reglas.</p>
+    </div>
+
+    <!-- Diapositiva 2: Visualizando la Subsecuencia (Con Mermaid.js) -->
+    <div class="slide">
+        <h3>Página 2: Visualizando la Subsecuencia 🖼️ (¡Ahora con Grafos!)</h3>
+
+        <h4 class="text-xl font-semibold text-gray-700 mb-2">Secuencia Original: `[10, 22, 9, 33, 21, 50]`</h4>
+        <p>Piensa en los números como una fila, cada uno en su propia posición:</p>
+        <div class="dp-array-container">
+            <table class="dp-array">
+                <thead>
+                    <tr>
+                        <th>Índice</th>
+                        <th>0</th>
+                        <th>1</th>
+                        <th>2</th>
+                        <th>3</th>
+                        <th>4</th>
+                        <th>5</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="font-semibold">Valor `nums`</td>
+                        <td>10</td>
+                        <td>22</td>
+                        <td>9</td>
+                        <td>33</td>
+                        <td>21</td>
+                        <td>50</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <h4 class="text-xl font-semibold text-gray-700 mb-2 mt-4">Formando una Subsecuencia Válida (Manteniendo el Orden):</h4>
+        <p>Podemos elegir algunos números, saltándonos otros, pero el orden de los elegidos <span class="highlight-text"><strong>NO PUEDE CAMBIAR</strong></span> con respecto a la original.</p>
+        <div class="mermaid">
+            graph LR
+                subgraph Secuencia Original
+                    N0(10) --- N1(22) --- N2(9) --- N3(33) --- N4(21) --- N5(50)
+                end
+                N0 -- "Seleccionamos" --> N4
+                N4 -- "Seleccionamos" --> N5
+                style N0 fill:#D4EDDA,stroke:#007BFF,stroke-width:2px
+                style N4 fill:#D4EDDA,stroke:#007BFF,stroke-width:2px
+                style N5 fill:#D4EDDA,stroke:#007BFF,stroke-width:2px
+                linkStyle 0 stroke:#007BFF,stroke-width:2px,fill:none,color:#007BFF;
+                linkStyle 1 stroke:#007BFF,stroke-width:2px,fill:none,color:#007BFF;
+                classDef selected fill:#e0f2f7,stroke:#007BFF,stroke-width:2px;
+                class N0,N4,N5 selected
+        </div>
+        <p class="text-center text-sm text-green-700 font-semibold mt-2">
+            ➡️ Subc. Válida: `[10, 21, 50]` <span class="text-green-600"><strong>✅</strong></span> (El orden 10 &rarr; 21 &rarr; 50 se mantiene).
+        </p>
+
+        <h4 class="text-xl font-semibold text-gray-700 mb-2 mt-4">Formando una Subsecuencia NO Válida (Rompiendo el Orden):</h4>
+        <p>Aquí intentamos seleccionar números en un orden que no se corresponde con la secuencia original.</p>
+        <div class="mermaid">
+            graph LR
+                subgraph Secuencia Original
+                    N_orig0(10) --- N_orig1(22) --- N_orig2(9) --- N_orig3(33) --- N_orig4(21) --- N_orig5(50)
+                end
+                N_orig3 -- "¡INTENTO INVÁLIDO!"--x N_orig2
+                style N_orig3 fill:#F8D7DA,stroke:#DC3545,stroke-width:2px
+                style N_orig2 fill:#F8D7DA,stroke:#DC3545,stroke-width:2px
+                linkStyle 0 stroke:#DC3545,stroke-width:2px,stroke-dasharray: 5 5;
+        </div>
+        <p class="text-center text-sm text-red-700 font-semibold mt-2">
+            ¡<span class="highlight-text"><strong>ERROR!</strong></span> Intentamos `[33, 9]` <span class="text-red-600"><strong>❌</strong></span><br>
+            Porque en la secuencia original, el `9` aparece <span class="highlight-text"><strong>antes</strong></span> que el `33`. ¡El orden está al revés!
+        </p>
+    </div>
+
+    <!-- Diapositiva 3: El Poder de la Programación Dinámica -->
+    <div class="slide">
+        <h3>Página 3: El Poder de la Programación Dinámica (PD) 🧠</h3>
+
+        <h4 class="text-xl font-semibold text-gray-700 mb-2">¿Qué es la Programación Dinámica?</h4>
+        <p>Es una estrategia para resolver problemas complejos. En lugar de intentar resolver el problema grande de una vez, lo dividimos en muchos <span class="highlight-text"><strong>pedacitos más pequeños (subproblemas)</strong></span>. Si un pedacito se repite, ¡guardamos su respuesta para no calcularla de nuevo! Esto ahorra mucho tiempo. ⏱️</p>
+
+        <h4 class="text-xl font-semibold text-gray-700 mb-2 mt-4">Dos Reglas de Oro de PD en LIS:</h4>
+
+        <h5 class="text-lg font-medium text-gray-600 mb-1">1. Subproblemas Superpuestos: 🔄</h5>
+        <ul class="list-disc ml-6">
+            <li>Para saber la LIS completa, necesitamos las LIS de "pedacitos" más cortos.</li>
+            <li>Muchos de esos "pedacitos" son los mismos y se calculan varias veces. ¡PD los guarda!</li>
+        </ul>
+
+        <h5 class="text-lg font-medium text-gray-600 mb-1 mt-4">2. Óptima Subestructura: 🏗️</h5>
+        <ul class="list-disc ml-6">
+            <li>Si la LIS de una secuencia termina en un número `X`, entonces la parte de esa LIS *antes* de `X` debe ser la LIS más larga posible para esa porción de la secuencia.</li>
+            <li>En otras palabras, la mejor solución global se construye uniendo las mejores soluciones de las partes más pequeñas.</li>
+        </ul>
+
+        <h4 class="text-xl font-semibold text-gray-700 mb-2 mt-4">Aplicación a LIS:</h4>
+        <ul class="list-disc ml-6">
+            <li>Definimos un subproblema clave: "¿Cuál es la longitud de la LIS que <span class="highlight-text"><strong>TERMINA</strong></span> en el número `i` de nuestra secuencia original?"</li>
+            <li>Si sabemos la respuesta para los números anteriores, podemos calcular la respuesta para el número actual.</li>
+        </ul>
+    </div>
+
+    <!-- Diapositiva 4: El Algoritmo LIS (Entendiendo los Números) -->
+    <div class="slide">
+        <h3>Página 4: El Algoritmo LIS (Con Nuestro Amigo `dp` - ¡Entendiendo los Números!) 🚀</h3>
+
+        <h4 class="text-xl font-semibold text-gray-700 mb-2">Idea Clave:</h4>
+        <p>Usamos un arreglo auxiliar que llamamos `dp`. Cada elemento `dp[i]` significa:</p>
+        <p class="text-center text-2xl font-bold italic my-4 text-emerald-700">
+            "La longitud de la Subsecuencia Creciente Más Larga que OBLIGATORIAMENTE TERMINA en `nums[i]` (el número en la posición `i` de la secuencia original)."
+        </p>
+
+        <h4 class="text-xl font-semibold text-gray-700 mb-2 mt-4">Pasos del Algoritmo (\(O(N^2)\)):</h4>
+
+        <h5 class="text-lg font-medium text-gray-600 mb-1">1. Inicializar `dp`:</h5>
+        <ul class="list-disc ml-6">
+            <li>Crea un arreglo `dp` del mismo tamaño que tu secuencia de números (`nums`).</li>
+            <li>Pon un `1` en cada posición de `dp`. ¿Por qué? Porque cualquier número por sí solo (por ejemplo, `[10]`) es una LIS de longitud 1 que termina en sí mismo.</li>
+        </ul>
+        <div class="dp-array-container">
+            <table class="dp-array">
+                <thead>
+                    <tr>
+                        <th>Índice</th>
+                        <th>0</th>
+                        <th>1</th>
+                        <th>2</th>
+                        <th>3</th>
+                        <th>4</th>
+                        <th>5</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="font-semibold">Valor `nums`</td>
+                        <td>10</td>
+                        <td>22</td>
+                        <td>9</td>
+                        <td>33</td>
+                        <td>21</td>
+                        <td>50</td>
+                    </tr>
+                    <tr>
+                        <td class="font-semibold">Valor `dp`</td>
+                        <td>1</td>
+                        <td>1</td>
+                        <td>1</td>
+                        <td>1</td>
+                        <td>1</td>
+                        <td>1</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <h5 class="text-lg font-medium text-gray-600 mb-1 mt-4">2. Recorrer `nums` y Actualizar `dp`:</h5>
+        <ul class="list-disc ml-6">
+            <li>Vamos a ir número por número en `nums` (empezando desde el segundo, `nums[1]`). Para cada `nums[i]`:</li>
+            <li>Miramos <span class="highlight-text"><strong>todos los números anteriores</strong></span> a `nums[i]` (llamémoslos `nums[j]`, donde `j` es un índice anterior a `i`).</li>
+            <li><span class="highlight-text"><strong>Si `nums[i]` es mayor que `nums[j]`</strong></span> (\(nums[i] > nums[j]\)):
+                <ul class="list-disc ml-6">
+                    <li>Significa que podemos "añadir" `nums[i]` a la LIS que termina en `nums[j]`.</li>
+                    <li>La nueva longitud sería: `longitud de LIS que termina en nums[j]` (que es `dp[j]`) \(+ 1\) (por el propio `nums[i]`).</li>
+                    <li>Actualizamos `dp[i]` para que sea el <span class="highlight-text"><strong>valor más grande</strong></span> entre su valor actual y esta nueva longitud (\(dp[j] + 1\)).</li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Diapositiva 5: Ejemplo Visual Detallado -->
+    <div class="slide">
+        <h3>Página 5: Ejemplo Visual Detallado (¡La Magia de `dp` en Acción!) 📊</h3>
+        <p class="mb-4 text-lg font-bold">Secuencia Original: `nums = [10, 22, 9, 33, 21, 50]`</p>
+
+        <p class="mb-4">Aquí vemos la evolución del arreglo `dp` paso a paso, con los valores actualizados resaltados para mayor claridad.</p>
+
+        <h4 class="text-xl font-semibold text-gray-700 mb-2">1. Inicialización:</h4>
+        <div class="dp-array-container">
+            <table class="dp-array">
+                <thead><tr><th>Índice</th><th>0</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th></tr></thead>
+                <tbody>
+                    <tr><td class="font-semibold">Valor `nums`</td><td>10</td><td>22</td><td>9</td><td>33</td><td>21</td><td>50</td></tr>
+                    <tr><td class="font-semibold">Valor `dp`</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <h4 class="text-xl font-semibold text-gray-700 mb-2 mt-4">2. Procesando `nums[1] = 22`:</h4>
+        <ul class="list-disc ml-6">
+            <li>Elemento actual: `22`. Miramos antes: `10`.</li>
+            <li>`22 > 10`? ¡Sí! ✅</li>
+            <li>La LIS que termina en `10` tiene longitud `dp[0] = 1`.</li>
+            <li>Podemos formar `[10, 22]`, su longitud es \(1 + 1 = 2\).</li>
+            <li>Actualizamos `dp[1]` a `max(1, 2) = 2`.</li>
+        </ul>
+        <div class="dp-array-container">
+            <table class="dp-array">
+                <thead><tr><th>Índice</th><th>0</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th></tr></thead>
+                <tbody>
+                    <tr><td class="font-semibold">Valor `nums`</td><td>10</td><td>22</td><td>9</td><td>33</td><td>21</td><td>50</td></tr>
+                    <tr><td class="font-semibold">Valor `dp`</td><td>1</td><td class="highlight-cell">2</td><td>1</td><td>1</td><td>1</td><td>1</td></tr>
+                </tbody>
+            </table>
+            <div class="index-label">`dp[1]` actualizado</div>
+        </div>
+
+        <h4 class="text-xl font-semibold text-gray-700 mb-2 mt-4">3. Procesando `nums[2] = 9`:</h4>
+        <ul class="list-disc ml-6">
+            <li>Elemento actual: `9`. Miramos antes: `10`, `22`.</li>
+            <li>`9 > 10`? No. ❌</li>
+            <li>`9 > 22`? No. ❌</li>
+            <li>No puede extender ninguna LIS anterior. La LIS que termina en `9` es solo `[9]`.</li>
+            <li>`dp[2]` se mantiene en `1`.</li>
+        </ul>
+        <div class="dp-array-container">
+            <table class="dp-array">
+                <thead><tr><th>Índice</th><th>0</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th></tr></thead>
+                <tbody>
+                    <tr><td class="font-semibold">Valor `nums`</td><td>10</td><td>22</td><td>9</td><td>33</td><td>21</td><td>50</td></tr>
+                    <tr><td class="font-semibold">Valor `dp`</td><td>1</td><td>2</td><td class="highlight-cell">1</td><td>1</td><td>1</td><td>1</td></tr>
+                </tbody>
+            </table>
+            <div class="index-label">`dp[2]` se mantiene en 1</div>
+        </div>
+
+        <h4 class="text-xl font-semibold text-gray-700 mb-2 mt-4">4. Procesando `nums[3] = 33`:</h4>
+        <ul class="list-disc ml-6">
+            <li>Elemento actual: `33`. Miramos antes: `10`, `22`, `9`.</li>
+            <li>`33 > 10`? Sí. ✅ LIS(`10`) = 1. Nueva longitud = \(1 + 1 = 2\). `dp[3]` sería 2.</li>
+            <li>`33 > 22`? Sí. ✅ LIS(`22`) = `dp[1] = 2`. Nueva longitud = \(2 + 1 = 3\). `dp[3]` sería 3 (¡es mejor que 2!).</li>
+            <li>`33 > 9`? Sí. ✅ LIS(`9`) = `dp[2] = 1`. Nueva longitud = \(1 + 1 = 2\). (No es mejor que 3).</li>
+            <li>La LIS más larga que termina en `33` es `[10, 22, 33]`, con longitud 3.</li>
+        </ul>
+        <div class="dp-array-container">
+            <table class="dp-array">
+                <thead><tr><th>Índice</th><th>0</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th></tr></thead>
+                <tbody>
+                    <tr><td class="font-semibold">Valor `nums`</td><td>10</td><td>22</td><td>9</td><td>33</td><td>21</td><td>50</td></tr>
+                    <tr><td class="font-semibold">Valor `dp`</td><td>1</td><td>2</td><td>1</td><td class="highlight-cell">3</td><td>1</td><td>1</td></tr>
+                </tbody>
+            </table>
+            <div class="index-label">`dp[3]` actualizado a 3</div>
+        </div>
+
+        <h4 class="text-xl font-semibold text-gray-700 mb-2 mt-4">5. Procesando `nums[4] = 21`:</h4>
+        <ul class="list-disc ml-6">
+            <li>Elemento actual: `21`. Miramos antes: `10`, `22`, `9`, `33`.</li>
+            <li>`21 > 10`? Sí. ✅ LIS(`10`) = 1. Nueva longitud = \(1 + 1 = 2\). `dp[4]` sería 2.</li>
+            <li>`21 > 22`? No. ❌</li>
+            <li>`21 > 9`? Sí. ✅ LIS(`9`) = 1. Nueva longitud = \(1 + 1 = 2\). (No es mejor que 2).</li>
+            <li>`21 > 33`? No. ❌</li>
+            <li>La LIS más larga que termina en `21` es `[10, 21]` o `[9, 21]`, ambas con longitud 2.</li>
+        </ul>
+        <div class="dp-array-container">
+            <table class="dp-array">
+                <thead><tr><th>Índice</th><th>0</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th></tr></thead>
+                <tbody>
+                    <tr><td class="font-semibold">Valor `nums`</td><td>10</td><td>22</td><td>9</td><td>33</td><td>21</td><td>50</td></tr>
+                    <tr><td class="font-semibold">Valor `dp`</td><td>1</td><td>2</td><td>1</td><td>3</td><td class="highlight-cell">2</td><td>1</td></tr>
+                </tbody>
+            </table>
+            <div class="index-label">`dp[4]` actualizado a 2</div>
+        </div>
+
+        <h4 class="text-xl font-semibold text-gray-700 mb-2 mt-4">6. Procesando `nums[5] = 50`:</h4>
+        <ul class="list-disc ml-6">
+            <li>Elemento actual: `50`. Miramos antes: `10`, `22`, `9`, `33`, `21`.</li>
+            <li>`50 > 10`? Sí. LIS(`10`) = 1. Longitud \(1+1=2\).</li>
+            <li>`50 > 22`? Sí. LIS(`22`) = `dp[1]=2`. Longitud \(2+1=3\).</li>
+            <li>`50 > 9`? Sí. LIS(`9`) = `dp[2]=1`. Longitud \(1+1=2\).</li>
+            <li>`50 > 33`? Sí. LIS(`33`) = `dp[3]=3`. Longitud \(3+1=4\). ¡Este es el mejor hasta ahora!</li>
+            <li>`50 > 21`? Sí. LIS(`21`) = `dp[4]=2`. Longitud \(2+1=3\).</li>
+            <li>La LIS más larga que termina en `50` es `[10, 22, 33, 50]`, con longitud 4.</li>
+        </ul>
+        <div class="dp-array-container">
+            <table class="dp-array">
+                <thead><tr><th>Índice</th><th>0</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th></tr></thead>
+                <tbody>
+                    <tr><td class="font-semibold">Valor `nums`</td><td>10</td><td>22</td><td>9</td><td>33</td><td>21</td><td>50</td></tr>
+                    <tr><td class="font-semibold">Valor `dp`</td><td>1</td><td>2</td><td>1</td><td>3</td><td>2</td><td class="highlight-cell">4</td></tr>
+                </tbody>
+            </table>
+            <div class="index-label">`dp[5]` actualizado a 4</div>
+        </div>
+
+        <h4 class="text-xl font-semibold text-gray-700 mb-2 mt-4">7. Resultado Final:</h4>
+        <ul class="list-disc ml-6">
+            <li>Una vez que hemos llenado todo el arreglo `dp`, la longitud de la LIS de TODA la secuencia es simplemente el <span class="highlight-text"><strong>valor más grande</strong></span> que se encuentra en `dp`.</li>
+            <li>En nuestro ejemplo, `max(dp)` es `4`.</li>
+            <li>Por lo tanto, la Longest Increasing Subsequence para `[10, 22, 9, 33, 21, 50]` tiene una <span class="highlight-text"><strong>longitud de 4</strong></span>. Una de esas LIS es `[10, 22, 33, 50]`.</li>
+        </ul>
+    </div>
+
+    <!-- Diapositiva 6: Eficiencia y Aplicaciones -->
+    <div class="slide">
+        <h3>Página 6: Eficiencia y Aplicaciones de LIS ⏱️🌐</h3>
+
+        <h4 class="text-xl font-semibold text-gray-700 mb-2">Complejidad Algorítmica (Qué tan rápido y cuánta memoria usa):</h4>
+
+        <h5 class="text-lg font-medium text-gray-600 mb-1">Tiempo (\(O(N^2)\)): 🐢</h5>
+        <ul class="list-disc ml-6">
+            <li>Significa que si tienes \(N\) números, el tiempo que tarda el algoritmo crece aproximadamente con \(N\) al cuadrado.</li>
+            <li>Esto se debe a que tenemos dos "bucles" (ciclos) anidados: uno para recorrer \(nums[i]\) y otro para recorrer \(nums[j]\) (los anteriores).</li>
+        </ul>
+
+        <h5 class="text-lg font-medium text-gray-600 mb-1 mt-4">Espacio (\(O(N)\)): 💾</h5>
+        <ul class="list-disc ml-6">
+            <li>Significa que la cantidad de memoria que usa el algoritmo crece linealmente con \(N\).</li>
+            <li>Esto es por el espacio que necesitamos para guardar el arreglo `dp`.</li>
+        </ul>
+
+        <p class="mt-4"><span class="highlight-text"><strong>¡Dato extra!</strong></span> ✨ Hay una versión más avanzada de este algoritmo que usa búsqueda binaria y logra una complejidad de tiempo de \(O(N \log N)\), ¡mucho más rápido para secuencias muy grandes!</p>
+
+        <h4 class="text-xl font-semibold text-gray-700 mb-2 mt-4">¿Dónde se Aplica LIS?</h4>
+        <p>LIS no es solo un ejercicio, ¡es una herramienta poderosa! Se usa para:</p>
+        <ul class="list-disc ml-6">
+            <li><strong>Bioinformática:</strong> 🧬 Analizar y comparar secuencias de ADN o proteínas para encontrar similitudes o patrones de evolución.</li>
+            <li><strong>Análisis Financiero:</strong> 💰 Identificar tendencias alcistas en los precios de acciones o valores a lo largo del tiempo.</li>
+            <li><strong>Procesamiento de Imágenes:</strong> 📸 Ayudar en el reconocimiento de formas o el análisis de movimiento en secuencias de imágenes.</li>
+            <li><strong>Optimización:</strong> Donde necesites encontrar la mejor secuencia ordenada dentro de un conjunto de datos desordenados.</li>
+        </ul>
+    </div>
+</body>
+</html>
